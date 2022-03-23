@@ -1,0 +1,24 @@
+.container {
+  width: 100%;
+  text-align: center;
+  .form-container {
+    padding-top: 30px;
+    padding-bottom: 30px;
+    .title {
+      margin-bottom: 20px;
+    }
+    .searchbar-input {
+      width: 300px;
+      height: 40px;
+      border: none;
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.1) inset;
+      padding: 10px;
+    }
+    .searchform-button {
+      height: 40px;
+      border: none;
+      box-shadow: 0 0 40px rgba(32, 236, 5, 0.685) inset;
+      cursor: pointer;
+    }
+  }
+}
