@@ -1,6 +1,7 @@
 export interface Image {
-    id: number;
-    pageURL: string;
-    likes: number;
-    views: number;
+    id: number,
+    webformatURL: string,
+    tags: string,
+    likes: number,
+    views: number
 }

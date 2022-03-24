@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { Image } from 'src/app/common/interfaces/image.interface';
 
 @Component({
   selector: 'app-image-list',
@@ -6,6 +7,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./image-list.component.scss']
 })
 export class ImageListComponent implements OnInit {
+  @Input() images!: Array<Image>
 
   constructor() { }
 

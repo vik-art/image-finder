@@ -3,7 +3,11 @@
     <h1 class="title">Images</h1>
     <form [formGroup]="form" (ngSubmit)="submit()">
       <input type="text" class="searchbar-input" placeholder="Enter the image name" formControlName="query">
-      <button type="submit" class="searchform-button">Search</button>
+      <button type="submit" class="btn">Search</button>
     </form>
+  </div>
+  <div class="list-container" *ngIf="images.length">
+    <app-image-list [images]="images"></app-image-list>
+    <button class="btn">Load more</button>
   </div>
 </div>

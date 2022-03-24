@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { Image } from './common/interfaces/image.interface';
 import { ImageService } from './services/image.service';
 
 @Component({
@@ -16,7 +17,7 @@ export class AppComponent implements OnInit, OnDestroy {
   form!: FormGroup;
   page: number = 1;
   searchQuery: string = "";
-  images: Array<any> = [];
+  images: Array<Image> = [];
   unSubscriber!: Subscription;
 
   ngOnInit(): void {
@@ -46,7 +47,8 @@ export class AppComponent implements OnInit, OnDestroy {
     }
     this.unSubscriber = this.imageService.getImage(queryParams)
       .subscribe((images) => {
-        console.log(images.hits)
+        this.images = images.hits;
+        console.log(this.images)
       })
   }
 
