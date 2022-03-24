@@ -19,6 +19,7 @@ export class AppComponent implements OnInit, OnDestroy {
   searchQuery: string = "";
   images: Array<Image> = [];
   unSubscriber!: Subscription;
+  secondUnSubscriber!: Subscription;
 
   ngOnInit(): void {
     this.initForm()
@@ -48,8 +49,20 @@ export class AppComponent implements OnInit, OnDestroy {
     this.unSubscriber = this.imageService.getImage(queryParams)
       .subscribe((images) => {
         this.images = images.hits;
-        console.log(this.images)
+        this.page++
       })
+  }
+
+  loadMore() {
+   const queryParams = {
+      page: this.page,
+      searchQuery: this.searchQuery
+   }
+    this.secondUnSubscriber = this.imageService.getImage(queryParams)
+      .subscribe((images) => {
+        this.images = [...this.images, ...images.hits];
+        this.page++
+    })
   }
 
 }

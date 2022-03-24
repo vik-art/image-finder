@@ -8,6 +8,6 @@
   </div>
   <div class="list-container" *ngIf="images.length">
     <app-image-list [images]="images"></app-image-list>
-    <button class="btn">Load more</button>
+    <button class="btn" (click)="loadMore()">Load more</button>
   </div>
 </div>
