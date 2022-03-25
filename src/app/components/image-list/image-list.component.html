@@ -10,4 +10,4 @@
     </ul>
 </div>
 
-<app-image-item [src]="source" *ngIf="showModal"></app-image-item>
+<app-image-item [src]="source" (click)="hideModal()" *ngIf="showModal"></app-image-item>

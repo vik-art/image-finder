@@ -19,7 +19,10 @@ export class ImageListComponent implements OnInit {
   showImage(image: any) {
     this.showModal = true;
     this.source = image.largeImageURL;
-    console.log(this.source)
+  }
+
+  hideModal() {
+    this.showModal = false;
   }
 
 }
