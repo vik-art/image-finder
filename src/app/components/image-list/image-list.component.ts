@@ -7,11 +7,19 @@ import { Image } from 'src/app/common/interfaces/image.interface';
   styleUrls: ['./image-list.component.scss']
 })
 export class ImageListComponent implements OnInit {
-  @Input() images!: Array<Image>
+  @Input() images!: Array<Image>;
+  source!: string;
+  showModal: boolean = false;
 
   constructor() { }
 
   ngOnInit(): void {
+  }
+
+  showImage(image: any) {
+    this.showModal = true;
+    this.source = image.largeImageURL;
+    console.log(this.source)
   }
 
 }

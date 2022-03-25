@@ -11,6 +11,14 @@ ul {
 ul {
   list-style-type: none;
 }
-* {
+*,
+::before,
+::after {
   box-sizing: border-box;
+}
+
+::-webkit-scrollbar {
+  width: 7px;
+  background-color: rgb(107, 101, 101);
+  scroll-behavior: smooth;
 }

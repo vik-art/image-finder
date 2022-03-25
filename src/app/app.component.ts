@@ -24,10 +24,11 @@ export class AppComponent implements OnInit, OnDestroy {
   public load: boolean = false;
 
   ngOnInit(): void {
-    this.initForm()
+    this.initForm();
   }
   ngOnDestroy(): void {
-    this.unSubscriber.unsubscribe()
+    this.unSubscriber.unsubscribe();
+    this.secondUnSubscriber.unsubscribe();
   }
 
   initForm() {
@@ -44,7 +45,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
   
   submit() {
-    this.showLoading()
+    this.showLoading();
       const queryParams = {
       page: this.page,
       searchQuery: this.searchQuery
@@ -52,7 +53,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.unSubscriber = this.imageService.getImage(queryParams)
       .subscribe((images) => {
         this.images = images.hits;
-        this.page++
+        this.page++;
       })
   }
 
@@ -64,6 +65,7 @@ export class AppComponent implements OnInit, OnDestroy {
    }
     this.secondUnSubscriber = this.imageService.getImage(queryParams)
       .subscribe((images) => {
+        this.showLoading()
         this.images = [...this.images, ...images.hits];
         this.page++
     })
@@ -74,7 +76,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     setTimeout(() => {
       this.load = false
-    }, 5000)
+    }, 3000)
   }
 
 }
