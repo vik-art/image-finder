@@ -11,7 +11,7 @@ import { ImageService } from './services/image.service';
 })
 export class AppComponent implements OnInit, OnDestroy {
   constructor(
-    private imageService: ImageService
+    private imageService: ImageService,
   ){}
 
   form!: FormGroup;
@@ -20,6 +20,8 @@ export class AppComponent implements OnInit, OnDestroy {
   images: Array<Image> = [];
   unSubscriber!: Subscription;
   secondUnSubscriber!: Subscription;
+
+  public load: boolean = false;
 
   ngOnInit(): void {
     this.initForm()
@@ -35,14 +37,15 @@ export class AppComponent implements OnInit, OnDestroy {
     this.form.valueChanges.subscribe(() => {
       if (this.searchQuery !== this.form.value.query) {
         this.page = 1;
-        this.images = []
+        this.images = [];
       } 
         this.searchQuery = this.form.value.query;
     })
   }
   
   submit() {
-    const queryParams = {
+    this.showLoading()
+      const queryParams = {
       page: this.page,
       searchQuery: this.searchQuery
     }
@@ -52,6 +55,7 @@ export class AppComponent implements OnInit, OnDestroy {
         this.page++
       })
   }
+
 
   loadMore() {
    const queryParams = {
@@ -63,6 +67,14 @@ export class AppComponent implements OnInit, OnDestroy {
         this.images = [...this.images, ...images.hits];
         this.page++
     })
+  }
+
+  showLoading() {
+    this.load = true;
+
+    setTimeout(() => {
+      this.load = false
+    }, 5000)
   }
 
 }
