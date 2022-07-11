@@ -1,8 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map, Observable, tap } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { Image } from '../common/interfaces/image.interface';
 import { Params } from '../common/interfaces/params.interface';
 
 @Injectable({
