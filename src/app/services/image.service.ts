@@ -18,10 +18,5 @@ export class ImageService {
       .set('image_type', 'photo&orientation=horizontal')
       .set('per_page', 12)
     return this.http.get(environment.baseURL, { params: params })
-      .pipe(
-        tap((response: any) => {
-          return response
-      })
-    )
   }
 }

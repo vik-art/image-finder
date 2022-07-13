@@ -1,0 +1,7 @@
+<div class="form-container">
+    <h1 class="title">Images</h1>
+    <form [formGroup]="form" (ngSubmit)="takeData()">
+        <input type="text" class="searchbar-input" placeholder="Enter the image name" formControlName="query" />
+        <button type="submit" class="btn" [disabled]="form.invalid">Search</button>
+    </form>
+</div>

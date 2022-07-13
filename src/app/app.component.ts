@@ -1,5 +1,4 @@
 import {
-  AfterViewChecked,
   AfterViewInit,
   Component,
   ElementRef,
@@ -8,8 +7,8 @@ import {
   QueryList,
   ViewChildren,
 } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { delay, of, Subject, takeUntil, tap } from 'rxjs';
+
 import { Image } from './common/interfaces/image.interface';
 import { ImageService } from './services/image.service';
 
@@ -21,7 +20,6 @@ import { ImageService } from './services/image.service';
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   public images: Array<Image> = [];
   public load: boolean = false;
-  public form!: FormGroup;
   private page: number = 1;
   private searchQuery: string = '';
   private destroy$: Subject<boolean> = new Subject<boolean>();
@@ -30,11 +28,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChildren('imageItem', { read: ElementRef }) list:
     | QueryList<ElementRef>
     | undefined;
-
+    
   constructor(private imageService: ImageService) { }
 
   ngOnInit(): void {
-    this.initForm();
     this.setInterceptorObsetver()
   }
 
@@ -43,26 +40,15 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
        if (d.last) {
         this.observer?.observe(d.last.nativeElement)
       }
-    })
-  }
+     })
+  }  
 
-  private initForm() {
-    this.form = new FormGroup({
-      query: new FormControl('', [Validators.required]),
-    });
-    this.form.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(() => {
-      if (this.searchQuery !== this.form?.value.query) {
-        this.page = 1;
-        this.images = [];
-      }
-    });
-  }
-
-  public submit() {
+  public submit(e: { [key: string]: string }) {
+    this.searchQuery = e['query'];
     this.showLoading()
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {});
-    this.searchQuery = this.form.value.query;
+   
     this.imageService
       .getImage(this.searchQuery, this.page)
       .pipe(takeUntil(this.destroy$))
@@ -70,7 +56,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.images = images.hits;
         this.page++;
       });
-    this.form.reset();
+    
   }
 
   private showLoading() {
@@ -83,9 +69,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   private setInterceptorObsetver(): void {
     let options = {
       root: null,
-      threshold: 0.7
+      threshold: 0.5
     }
-    this.observer = new IntersectionObserver((entries) => {
+    this.observer = new IntersectionObserver(entries => {
       if (entries[0].isIntersecting) {
         this.imageService.getImage(this.searchQuery, this.page).pipe(takeUntil(this.destroy$)).subscribe(res => {
           this.images = [...this.images, ...res.hits];
