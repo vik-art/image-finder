@@ -1,82 +1,88 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Subscription } from 'rxjs';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  QueryList,
+  ViewChildren,
+} from '@angular/core';
+import { delay, of, Subject, takeUntil, tap } from 'rxjs';
+
 import { Image } from './common/interfaces/image.interface';
 import { ImageService } from './services/image.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
 })
-export class AppComponent implements OnInit, OnDestroy {
-  constructor(
-    private imageService: ImageService,
-  ){}
-
-  form!: FormGroup;
-  page: number = 1;
-  searchQuery: string = "";
-  images: Array<Image> = [];
-  unSubscriber!: Subscription;
-  secondUnSubscriber!: Subscription;
-
+export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
+  public images: Array<Image> = [];
   public load: boolean = false;
+  private page: number = 1;
+  private searchQuery: string = '';
+  private destroy$: Subject<boolean> = new Subject<boolean>();
+  private observer: IntersectionObserver | undefined;
+
+  @ViewChildren('imageItem', { read: ElementRef }) list:
+    | QueryList<ElementRef>
+    | undefined;
+    
+  constructor(private imageService: ImageService) { }
 
   ngOnInit(): void {
-    this.initForm();
-  }
-  ngOnDestroy(): void {
-    this.unSubscriber.unsubscribe();
-    this.secondUnSubscriber.unsubscribe();
+    this.setInterceptorObsetver()
   }
 
-  initForm() {
-    this.form = new FormGroup({
-      query: new FormControl("", [Validators.required])
-    })
-    this.form.valueChanges.subscribe(() => {
-      if (this.searchQuery !== this.form.value.query) {
-        this.page = 1;
-        this.images = [];
-      } 
-        this.searchQuery = this.form.value.query;
-    })
-  }
-  
-  submit() {
-    this.showLoading();
-      const queryParams = {
-      page: this.page,
-      searchQuery: this.searchQuery
-    }
-    this.unSubscriber = this.imageService.getImage(queryParams)
+   ngAfterViewInit(): void {
+     this.list?.changes.pipe(takeUntil(this.destroy$)).subscribe(d => {
+       if (d.last) {
+        this.observer?.observe(d.last.nativeElement)
+      }
+     })
+  }  
+
+  public submit(e: { [key: string]: string }) {
+    this.searchQuery = e['query'];
+    this.showLoading()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {});
+   
+    this.imageService
+      .getImage(this.searchQuery, this.page)
+      .pipe(takeUntil(this.destroy$))
       .subscribe((images) => {
         this.images = images.hits;
         this.page++;
-      })
+      });
+    
   }
 
-
-  loadMore() {
-   const queryParams = {
-      page: this.page,
-      searchQuery: this.searchQuery
-   }
-    this.secondUnSubscriber = this.imageService.getImage(queryParams)
-      .subscribe((images) => {
-        this.showLoading()
-        this.images = [...this.images, ...images.hits];
-        this.page++
-    })
+  private showLoading() {
+    return of((this.load = true)).pipe(
+      delay(3000),
+      tap(() => (this.load = false))
+    );
   }
 
-  showLoading() {
-    this.load = true;
-
-    setTimeout(() => {
-      this.load = false
-    }, 3000)
+  private setInterceptorObsetver(): void {
+    let options = {
+      root: null,
+      threshold: 0.5
+    }
+    this.observer = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) {
+        this.imageService.getImage(this.searchQuery, this.page).pipe(takeUntil(this.destroy$)).subscribe(res => {
+          this.images = [...this.images, ...res.hits];
+          this.page++;
+        })
+      }
+    }, options)
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
+  }
 }
